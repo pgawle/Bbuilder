@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="tasks.YUI.2.4.6">
+	<path id="task.YUI.classpath">
+		<pathelement location="${path.builder}/plugins/tasks.YUI.2.4.6/lib/yuicompressor-2.4.6.jar" />
+		<pathelement location="${path.builder}/plugins/tasks.YUI.2.4.6/lib/" />
+	</path>
+	<property name="YUIclasspath" refid="task.YUI.classpath" />
+	<macrodef name="minifyJS">
+	     <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+        <sequential>
+            <property name="absolute.path" location="@{pTarget}/@{pLang}"/>
+        	<echo >minifyJs with YUI.2.4.6 compressor</echo>
+            <java
+             classname="minifyJS"
+             classpath="${YUIclasspath}"
+            >
+                <arg value="${absolute.path}/${main.js}/"/>
+            </java>
+        </sequential>
+    </macrodef>
+	
+	<macrodef name="minifyCSS">
+	      <attribute name="pTarget" default="${path.project}/${main.target}"/>
+        <attribute name="pLang" />
+        <sequential>
+            <property name="absolute.path" location="@{pTarget}/@{pLang}"/>
+        	<echo >minifyCSS with YUI.2.4.6 compressor</echo>
+            <java
+             classname="minifyCSS"
+             classpath="${YUIclasspath}"
+            >
+                <arg value="${absolute.path}/${main.css}/"/>
+            </java>
+        </sequential>
+    </macrodef>
+</project>

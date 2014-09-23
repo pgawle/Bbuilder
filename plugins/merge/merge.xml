@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="MERGE">
+    <macrodef name="merge">
+        <attribute name="pTarget" default="${path.project}/${main.target}"/>
+        <sequential>
+            <if>
+                <isset property="P" />
+                <then>
+                    <exec executable="PHP">
+                        <arg value="${path.builder}/plugins/merge/lib/merge.php"/>
+                        <arg value="${P}"/>
+                    </exec>
+                </then>
+                <elseif>
+                    <isset property="merge.path" />
+                    <then>
+                        <exec executable="PHP">
+                            <arg value="${path.builder}/plugins/merge/lib/merge.php"/>
+                            <arg value="${merge.path}"/>
+                        </exec>
+                    </then>
+                </elseif>
+                <else>
+                    <echo message="The path for merge must be set : or as -DP=path in command line, or merge.path in properties file" />
+                </else>
+            </if>
+        </sequential>
+    </macrodef>
+</project>

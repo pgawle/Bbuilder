@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project name="jsDocs">
+ <macrodef name="createDocs">
+    <sequential>
+      <property name="absoluteJS.dir" location="${path.project}/${main.js}"/>
+      <property name="absoluteJSDOC.dir" location="${path.project}/${main.jsDoc}"/>
+                <java jar="${path.builder}\plugins\jsDoc\lib\jsrun.jar" 
+resultproperty="jsDocCreated" 
+                      dir="${path.builder}\plugins\jsDoc\lib" fork="true"> 
+                     
+                      <arg value="${path.builder}/plugins/jsDoc/lib/app/run.js" />
+                      <arg value="-a" />
+                      <arg value="-t=${path.builder}/plugins/jsDoc/lib/templates/jsdoc" />
+                      <arg value="${absoluteJS.dir}" />
+                      <arg value="-r=4" /> 
+                      <arg value="-d=${absoluteJSDOC.dir}" />
+                       
+                </java> 
+    </sequential>
+  </macrodef>
+</project>

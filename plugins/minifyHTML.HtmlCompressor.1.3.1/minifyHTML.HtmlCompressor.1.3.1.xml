@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<project name="compressHTMLHtmlCompressor1.3.1">
+	
+	<macrodef name="minifyHTML">
+	  <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang" default="en-gb"/>
+		<sequential>
+			<echo> minifyHTML with HtmlCompressor.1.3.1</echo>
+			<apply executable="java" parallel="false" force="true" dest="@{pTarget}/@{pLang}">
+				<fileset dir="@{pTarget}/@{pLang}">
+					<include name="**/*.html"/>
+				</fileset>
+				
+				 
+				<arg value="-jar"/>
+				<arg path="${path.builder}/plugins/minifyHTML.HtmlCompressor.1.3.1/lib/htmlcompressor-1.3.1.jar"/>
+				<srcfile/>
+				<arg value="-o"/>
+				<mapper type="identity"/>
+				<targetfile/>
+			</apply>
+		</sequential>
+	</macrodef>
+</project>

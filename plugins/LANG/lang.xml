@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="LANG">
+  <macrodef name="exportLangs">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <sequential>
+      <exec executable="PHP">
+        <arg value="${path.builder}/plugins/LANG/lib/exportLangs.php"/>
+        <arg value="${path.project}/i18nSource/locale.csv"/>
+        <arg value="${path.project}/i18n/"/>
+      </exec>
+    </sequential>
+  </macrodef>
+  <macrodef name="addCssLang">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang" />
+    <sequential>
+      <echo>ADD ALL LINK(CSS) TAG @{pLang}</echo>
+       <if>
+        <available file="@{pTarget}/@{pLang}/css/@{pLang}.css"/>
+        <then>
+            <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+      match="&lt;head&gt;"
+      replace="&lt;head&gt;&#10;&lt;link rel=&quot;stylesheet&quot; href=&quot;css\/@{pLang}.css&quot;&gt;"
+      byline="true"
+      />     
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+</project>

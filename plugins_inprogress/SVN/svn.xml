@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project name="SVN">
+	<typedef resource="com/googlecode/svntask/svntask.xml">
+		<classpath>
+			<fileset dir="${path.builder}/plugins/SVN/lib">
+				<include name="svnkit.jar"/>
+				<include name="svntask.jar"/>
+			</fileset>
+		</classpath>
+	</typedef>
+	<macrodef name="commit2">
+		<sequential>
+			<!--<svn>
+				<add
+				path="../${target.dir}"
+				force="false"
+				/>
+			</svn> -->
+			 <svn><add path="." force="false" /></svn>
+			<svn>
+				<commit
+				path="../"
+				commitMessage="ANT Test commit"
+				force="true"
+				password="hJH834Hdn"
+				user = "piotr" 
+				/>
+			</svn>
+			<svn>
+				<info path=".." revisionProperty="revisionVersion" />
+			</svn>
+			<property name="version" value="${revisionVersion}" />
+			<echo>${version}</echo>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="copyToTargetRelease">
+		<sequential>
+			<delete includeEmptyDirs="true">
+				<fileset dir="../target_release" includes="**/*.*"/>
+				<fileset dir="../target_release" includes="**"/>
+			</delete>
+			<copy todir="../target_release" verbose="true">
+				<fileset dir="../${target.dir}">
+					<include name="**/*.*"/>
+				</fileset>
+			</copy>
+		</sequential>
+	</macrodef>	
+	<macrodef name="commit">
+		<sequential>
+			<tstamp prefix="start">
+    			<format property="NOW" pattern="d.MM.yyyy HH:mm" locale="en,UK"/>
+  			</tstamp>
+  			 <svn><add path="../target_release" force="true" /></svn>
+  			<svn>
+				<commit
+				path="../target_release"
+				commitMessage="Target Release ${start.NOW}"
+				force="true"
+				password="hJH834Hdn"
+				user = "piotr" 
+				/>
+			</svn> 
+  			 
+  			 
+  			  			
+  			<echo>${start.NOW}</echo>
+			<!--<svn>
+				<commit
+				path="../target_release"
+				commitMessage=""
+				force="true"
+				password="hJH834Hdn"
+				user = "piotr" 
+				/>
+			</svn>
+			<svn>
+				<info path=".." revisionProperty="revisionVersion" />
+			</svn>
+			<property name="version" value="${revisionVersion}" />
+			<echo>${version}</echo>!-->
+		</sequential>
+	</macrodef>
+</project>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<project name="minifyHtml.jericho">
+	<macrodef name="minifyHtmlJericho">
+		<attribute name="html.path"/>
+		<sequential>
+			<property name="class.path" location="./plugins/minifyHTML.jericho/lib/"/>
+			<java
+			classname="minifyHtml"
+			classpath="${class.path};${class.path}/jericho-html-3.1.jar"
+			>
+				<arg value="../@{html.path}"/>
+			</java>
+			<echo message="minifying @{html.path}"/>
+		</sequential>
+	</macrodef>
+</project>

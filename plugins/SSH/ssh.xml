@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="SSH">
+	<path id="jsch.path">
+		<pathelement location="${path.builder}/plugins/SSH/lib/ant-jsch.jar"/>
+		<pathelement location="${path.builder}/plugins/SSH/lib/jsch-0.1.44.jar"/>
+	</path>
+	<taskdef name="scpBBuilder" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp" classpathref="jsch.path"/>
+	<macrodef name="sshToServ">
+	 
+		<sequential>
+		  <echo>${ssh.user}@${ssh.server}:${ssh.dir}</echo>
+			<scpBBuilder remoteTodir="${ssh.user}@${ssh.server}:${ssh.dir}"
+			keyfile="${privatekey.path}" 
+			passphrase="${privatekey.passphrase}"
+			trust="yes"
+			sftp="true">
+				<fileset dir="${path.project}/${main.target}">
+					<include name="**/*.zip"/>
+				</fileset>
+			</scpBBuilder>
+		</sequential>
+	</macrodef>
+</project>

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<project name="cacheManifest">
+  
+  
+
+  <macrodef name="createCacheManifest">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+        <sequential>
+          <if>
+           <equals arg1="${createManifest}" arg2="true" />
+            <then>
+
+
+          <echo >create Manifest</echo>
+          <touch file = "@{pTarget}/@{pLang}/cache.manifest" />
+          <concat destfile="@{pTarget}/@{pLang}/cache.manifest" append="true">CACHE MANIFEST</concat>
+          <tstamp prefix="start">
+             <format property="NOW" pattern="dMMyyyyHHmm" locale="en,UK"/>
+           </tstamp>
+         <concat destfile="@{pTarget}/@{pLang}/cache.manifest" append="true">
+#ver ${start.NOW}
+NETWORK:
+*
+CACHE:
+</concat>
+        <propertyselector property="manifestExclude" match="manifestExclude\.(.*)" select="\1"/>
+        <var name="excludes" value=""/>
+        <for list="${manifestExclude}" param="exlcude">
+          <sequential>
+            <var name="excludes" value="${excludes}${main.img}/${manifestExclude.@{exlcude}}/*.*,"/>
+          </sequential>
+        </for>
+          <for param="url">
+          <path>
+            <fileset dir="@{pTarget}/@{pLang}" excludes="${excludes}" >
+              <include name="${main.img}/**/*.*"/>
+            </fileset>
+          </path>
+          <sequential>
+          <var name="path" value="@{url}"/>
+          <propertyregex property="path"
+              input="${path}"
+              regexp="\\"
+              replace="/"
+              override="true"
+              casesensitive="false" />
+           <propertyregex property="path"
+              input="${path}"
+              regexp="(.*)/${main.img}(.*)"
+              select="\2"
+              override="true"
+              casesensitive="false" />
+<concat destfile="@{pTarget}/@{pLang}/cache.manifest" append="true">${main.img}${path}
+</concat>
+          </sequential>
+          </for>
+          
+          <for param="css">
+          <path>
+            <fileset dir="@{pTarget}/@{pLang}">
+              <include name="${main.css}/**/*.css"/>
+            </fileset>
+          </path>
+          <sequential>
+          <var name="pathCss" value="@{css}"/>
+          <propertyregex property="pathCss"
+              input="${pathCss}"
+              regexp="\\"
+              replace="/"
+              override="true"
+              casesensitive="false" />
+          <propertyregex property="pathCss"
+              input="${pathCss}"
+              regexp="(.*)/${main.css}(.*)"
+              select="\2"
+              override="true"
+              casesensitive="false" />
+              <concat destfile="@{pTarget}/@{pLang}/cache.manifest" append="true">
+${main.css}${pathCss}</concat>
+          </sequential>
+          </for>
+ </then>
+</if>
+
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="includeManifest">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+      <sequential>
+         <if>
+           <equals arg1="${createManifest}" arg2="true" />
+            <then>
+
+             <replace file="@{pTarget}/@{pLang}/index.html" token="&lt;html&gt;" value="&lt;html manifest=&quot;cache.manifest&quot;&gt;"/>
+        </then>
+        </if>
+      </sequential>
+    </macrodef>
+    
+    
+</project>

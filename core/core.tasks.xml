@@ -1,0 +1,364 @@
+<?xml version="1.0"?>
+
+<project name="structure">
+
+  <macrodef name="createRedirectIndex">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <sequential>
+      <touch file="@{pTarget}/index.php"/>
+      <echo file="@{pTarget}/index.php">&lt;?php header('Location: /@{pLang}/'.$_SERVER['REQUEST_URI']); ?&gt;</echo>
+    </sequential>
+  </macrodef>
+  <macrodef name="checkProperties">
+    <sequential>
+      <fail  message="project.version IS MISSING, PUT PROPERTY IN priviate.properties">
+        <condition>
+          <not>
+            <isset property="project.version"/>
+          </not>
+        </condition>
+      </fail>
+      <echo>${project.version}</echo>
+    </sequential>
+  </macrodef>
+  <macrodef name="createEmptyTarget">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <sequential>
+      <mkdir dir="@{pTarget}"/>
+    </sequential>
+  </macrodef>
+    <macrodef name="createTargetInside">
+        <attribute name="pProjectPath" default="${path.project}"></attribute>
+        <attribute name="pTarget" default="@{pProjectPath}/${main.target}"/>
+        <attribute name="pLang"/>
+        <attribute name="pGameName"/>
+        <sequential>
+            <mkdir dir="@{pTarget}/@{pLang}"/>
+            <copy todir="@{pTarget}/@{pLang}" verbose="false">
+                <fileset dir="@{pProjectPath}">
+                    <include name="${main.js}/**/*.*"/>
+                    <include name="${main.css}/**/*.*"/>
+                    <include name="${main.img}/**/*.*"/>
+                    <include name="${main.i18n}/**/@{pLang}.js"/>
+                    <include name="${main.index}"/>
+                </fileset>
+            </copy>
+            <propertyselector property="miniPortalAddFolder" match="miniPortal.addFolder.@{pGameName}\.(.*)" select="\1"/>
+            <for list="${miniPortalAddFolder}" param="folderToAdd">
+                <sequential>
+
+                    <copy todir="@{pTarget}/@{pLang}" verbose="false">
+                        <fileset dir="@{pProjectPath}">
+                            <include name="${miniPortal.addFolder.@{pGameName}.@{folderToAdd}}/**/*.*"/>
+                        </fileset>
+                    </copy>
+                </sequential>
+            </for>
+            <propertyselector property="miniPortalAddFile" match="miniPortal.addFile.@{pGameName}\.(.*)" select="\1"/>
+            <for list="${miniPortalAddFile}" param="fileToAdd">
+                <sequential>
+                    <copy todir="@{pTarget}/@{pLang}" verbose="false">
+                        <fileset dir="@{pProjectPath}">
+                            <include name="${miniPortal.addFile.@{pGameName}.@{fileToAdd}}"/>
+                        </fileset>
+                    </copy>
+                </sequential>
+            </for>
+        </sequential>
+    </macrodef>
+    <macrodef name="createTargetAARP">
+        <attribute name="pTarget" default="${path.project}/${main.target}"/>
+        <attribute name="pLang"/>
+        <sequential>
+            <mkdir dir="@{pTarget}/@{pLang}"/>
+            <copy todir="@{pTarget}/@{pLang}" verbose="false">
+                <fileset dir="${path.project}">
+                    <include name="${main.js}/**/*.*"/>
+                    <include name="${main.css}/**/*.*"/>
+                    <include name="${main.img}/**/*.*"/>
+                    <include name="${main.i18n}/**/@{pLang}.js"/>
+                    <include name="${main.index}"/>
+                </fileset>
+            </copy>
+
+            <property name="common" location="${path.project}/../common/"/>
+
+
+            <copy todir="@{pTarget}/@{pLang}/js" verbose="false">
+                <fileset id="dist.contents" dir="${common}/js" includes="**/*.*"/>
+            </copy>
+
+            <copy todir="@{pTarget}/@{pLang}/css" verbose="false">
+                <fileset id="dist.contents" dir="${common}/css" includes="**/*.*"/>
+            </copy>
+
+            <copy todir="@{pTarget}/@{pLang}/img" verbose="false">
+                <fileset id="dist.contents" dir="${common}/img" includes="**/*.*"/>
+            </copy>
+
+            <copy todir="@{pTarget}/@{pLang}/i18n" verbose="false">
+                <fileset id="dist.contents" dir="${common}/i18n" includes="**/*.*"/>
+            </copy>
+
+           <!-- <propertyselector property="addFolder" match="addFolder\.(.*)" select="\1"/>
+            <for list="${addFolder}" param="folderToAdd">
+                <sequential>
+                    <echo></echo>
+                    <copy todir="@{pTarget}/@{pLang}" verbose="false">
+                        <fileset dir="${path.project}">
+                            <include name="${addFolder.@{folderToAdd}}/**/*.*"/>
+                        </fileset>
+                    </copy>
+                </sequential>
+            </for>
+            <propertyselector property="addFile" match="addFile\.(.*)" select="\1"/>
+            <for list="${addFile}" param="fileToAdd">
+                <sequential>
+                    <copy todir="@{pTarget}/@{pLang}" verbose="false">
+                        <fileset dir="${path.project}">
+                            <include name="${addFile.@{fileToAdd}}"/>
+                        </fileset>
+                    </copy>
+                </sequential>
+            </for>-->
+        </sequential>
+    </macrodef>
+  <macrodef name="createTarget">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <sequential>
+      <mkdir dir="@{pTarget}/@{pLang}"/>
+      <copy todir="@{pTarget}/@{pLang}" verbose="false">
+        <fileset dir="${path.project}">
+          <include name="${main.js}/**/*.*"/>
+          <include name="${main.css}/**/*.*"/>
+          <include name="${main.img}/**/*.*"/>
+          <include name="${main.i18n}/**/@{pLang}.js"/>
+          <include name="${main.index}"/>
+        </fileset>
+      </copy>
+      <propertyselector property="addFolder" match="addFolder\.(.*)" select="\1"/>
+      <for list="${addFolder}" param="folderToAdd">
+        <sequential>
+          <echo></echo>
+          <copy todir="@{pTarget}/@{pLang}" verbose="false">
+            <fileset dir="${path.project}">
+              <include name="${addFolder.@{folderToAdd}}/**/*.*"/>
+            </fileset>
+          </copy>
+        </sequential>
+      </for>
+      <propertyselector property="addFile" match="addFile\.(.*)" select="\1"/>
+      <for list="${addFile}" param="fileToAdd">
+        <sequential>
+          <copy todir="@{pTarget}/@{pLang}" verbose="false">
+            <fileset dir="${path.project}">
+              <include name="${addFile.@{fileToAdd}}"/>
+            </fileset>
+          </copy>
+        </sequential>
+      </for>
+    </sequential>
+  </macrodef>
+    <macrodef name="addFileAfter">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <sequential>
+        <echo>Bazzinga</echo>
+        <propertyselector property="addFileAfter" match="addFileAfter\.(.*)" select="\1"/>
+        <for list="${addFileAfter}" param="fileToAdd">
+            <sequential>
+                <echo></echo>
+                <copy todir="@{pTarget}/@{pLang}" verbose="true">
+                    <fileset dir="${path.project}">
+                        <include name="${addFileAfter.@{fileToAdd}}"/>
+                    </fileset>
+                </copy>
+            </sequential>
+        </for>
+    </sequential>
+    </macrodef>
+  <macrodef name="createTargetWithNoLangDir">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <sequential>
+      <mkdir dir="@{pTarget}/"/>
+      <copy todir="@{pTarget}/" verbose="false">
+        <fileset dir="${path.project}">
+          <include name="${main.js}/**/*.*"/>
+          <include name="${main.css}/**/*.*"/>
+          <include name="${main.img}/**/*.*"/>
+          <include name="${main.i18n}/**/@{pLang}.js"/>
+          <include name="${main.index}"/>
+        </fileset>
+      </copy>
+      <propertyselector property="addFolder" match="addFolder\.(.*)" select="\1"/>
+      <for list="${addFolder}" param="folderToAdd">
+        <sequential>
+          <echo></echo>
+          <copy todir="@{pTarget}/" verbose="false">
+            <fileset dir="${path.project}">
+              <include name="${addFolder.@{folderToAdd}}/**/*.*"/>
+            </fileset>
+          </copy>
+        </sequential>
+      </for>
+      <propertyselector property="addFile" match="addFile\.(.*)" select="\1"/>
+      <for list="${addFile}" param="fileToAdd">
+        <sequential>
+          <copy todir="@{pTarget}/" verbose="false">
+            <fileset dir="${path.project}">
+              <include name="${addFile.@{fileToAdd}}"/>
+            </fileset>
+          </copy>
+        </sequential>
+      </for>
+    </sequential>
+  </macrodef>
+  <macrodef name="removeTarget">
+    <sequential>
+      <echo >removing Target</echo>
+      <delete dir="${path.project}/${main.target}"/>
+    </sequential>
+  </macrodef>
+  <macrodef name="echoDone">
+    <sequential>
+      <echo > ______   _______  _        _______</echo>
+      <echo >(  __  \ (  ___  )( (    /|(  ____ \</echo>
+      <echo >| (  \  )| (   ) ||  \  ( || (    \/</echo>
+      <echo >| |   ) || | * | ||   \ | || (__</echo>
+      <echo >| | * | || |   | || (\ \) ||  __)</echo>
+      <echo >| |   ) || | * | || | \   || (</echo>
+      <echo >| (__/  )| (___) || )  \  || (____/\</echo>
+      <echo >(______/ (_______)|/    )_)(_______/</echo>
+    </sequential>
+  </macrodef>
+  <macrodef name="removeDebugs">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <sequential>
+      <echo>removeDebugJS</echo>
+      <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+      match="^.*&lt;script.*name=&#34;debug&#34;.*&lt;\/script&gt;"
+      replace=" "
+      byline="true"
+      />
+      <echo>removeDebugCSS</echo>
+      <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+       match="^.*&lt;link.*name=&#34;debug&#34;.*&gt;"
+      replace=" "
+      byline="true"
+      />
+    </sequential>
+  </macrodef>
+  <macrodef name="addLang">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang" />
+    <sequential>
+      <echo>ADD LANG TO HTML (@{pLang})</echo>
+      <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+      match="&lt;\/body&gt;"
+      replace="&lt;\/body&gt;&#10;&lt;script src=&quot;.\/i18n\/@{pLang}.js&quot;&gt;&lt;\/script&gt;&#10;"
+      byline="true"
+      />
+    </sequential>
+  </macrodef>
+  <macrodef name="zipTarget" >
+    <sequential>
+      <tstamp prefix="start">
+        <format property="NOW" pattern="dMMyyyyHHmm" locale="en,UK"/>
+      </tstamp>
+        <script language="javascript"><![CDATA[
+            function randomFromInterval(from,to)
+            {
+                return Math.floor(Math.random()*(to-from+1)+from);
+            }
+            project.setProperty("resultRand",randomFromInterval(1,1000));
+        ]]></script>
+      <property name="releaseFileName" value="release_${start.NOW}${resultRand}"/>
+      <echo>Ziping Target ${releaseFileName}</echo>
+      <zip destfile="${path.project}/${main.target}/${releaseFileName}.zip"
+      basedir="${path.project}/${main.target}"
+      />
+    </sequential>
+  </macrodef>
+  <macrodef name="zipTargetWithoutDate">
+    <sequential>
+      <echo>Ziping Target ${releaseFileName}</echo>
+      <zip destfile="${path.project}/${main.target}/release.zip"
+      basedir="${path.project}/${main.target}"
+      />
+    </sequential>
+  </macrodef>
+  <macrodef name="removeLineFor">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <attribute name="name"/>
+    <attribute name="forLang" default=""/>
+    <sequential>
+      <if>
+        <equals arg1="@{pLang}" arg2="@{forLang}" />
+        <then>
+          <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+          match="^([ \t]+|).*@{name}.*"
+          replace=" "
+          byline="true" />
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+
+    <macrodef name="zipApp">
+        <attribute name="pTarget" default="${path.project}/${main.target}"/>
+        <attribute name="pLang"/>
+        <sequential>
+            <property name="releaseFileName" value="${project.name}"/>
+
+            <echo>Ziping Target ${releaseFileName}</echo>
+            <zip destfile="${path.project}/${main.target}/${releaseFileName}.zip"
+                 basedir="@{pTarget}/@{pLang}"
+                    />
+        </sequential>
+    </macrodef>
+
+
+    <macrodef name="removeLineExcept">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <attribute name="name"/>
+    <attribute name="exceptLang" default=""/>
+    <sequential>
+      <if>
+        <equals arg1="@{pLang}" arg2="@{exceptLang}" />
+        <then></then>
+        <else>
+            <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+            match="^([ \t]+|).*@{name}.*"
+            replace=" "
+            byline="true" />
+        </else>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  
+  
+  
+  <macrodef name="removeLine">
+    <attribute name="pTarget" default="${path.project}/${main.target}"/>
+    <attribute name="pLang"/>
+    <attribute name="name"/>
+    <attribute name="forLang" default=""/>
+    <attribute name="exceptLang" default=""/>
+    <sequential>
+          <replaceregexp file="@{pTarget}/@{pLang}/${main.index}"
+          match="^([ \t]+|).*@{name}.*"
+          replace=" "
+          byline="true" />
+    </sequential>
+  </macrodef>
+
+  
+</project>
+

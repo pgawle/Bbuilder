@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<project name="concat">
+	<path id="task.classpath">
+		<pathelement location="${path.builder}/plugins/concat/lib/" />
+		<pathelement location="${path.builder}\plugins\concat\lib\jericho-html-3.2.jar" />
+	</path>
+	<property name="classpath" refid="task.classpath" />
+
+	<macrodef name="concatJS">
+	     <attribute name="pTarget" default="${path.project}/${main.target}"/>
+	     <attribute name="pLang"/>
+        <sequential>
+            <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+        	<echo >concatenate JS files</echo>
+            <java
+             classname="concatJS"
+             classpath="${classpath}"
+            >
+                <arg value="${absolute.path.@{pLang}}"/>
+                <arg value="${absolute.path.@{pLang}}/${main.index}"/>
+            </java>
+        </sequential>
+    </macrodef>
+    
+    
+    
+    
+    
+    
+    <macrodef name="RemoveAllScriptTagsWithSCR">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+       <sequential>
+           <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+            <echo>Remove All Script Tags with SCR</echo>
+           	<replaceregexp file="${absolute.path.@{pLang}}/${main.index}"
+               match="^([ \t]+|)&lt;script(?!.*name=&quot;keep&quot;).*\/script&gt;"
+               replace=" "
+               byline="true"
+			/>       
+			
+			     
+			
+		</sequential>
+		
+    </macrodef>
+    
+    
+    <macrodef name="RemoveNotAllJSFiles">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+       <sequential>
+           <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+            <echo>Remove All JS scripts not used</echo>
+           	<delete includeEmptyDirs="true">
+           		<fileset dir="${absolute.path.@{pLang}}/${main.js}" >
+  					<include name="**/*.*"/>
+  					<include name="**/*"/>
+  					<exclude name="**/*all*.js"/>
+                    <exclude name="**/keep/*.js"/>
+				</fileset>
+  			</delete>
+        <delete dir="${absolute.path.@{pLang}}/${folder.i18n}"/>
+		</sequential>
+		
+    </macrodef>
+    
+   
+    
+    
+    <macrodef name="addAllJsScriptTag">
+      <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+       <sequential>
+        <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+        <tstamp>
+          <format property="current.time.js" pattern="yyyyMMdd_HHmmss" />
+        </tstamp>
+            <echo>Add all.js ScriptTag</echo>
+		<replaceregexp file="${absolute.path.@{pLang}}/${main.index}"
+               match="&lt;\/html&gt;"
+               replace="&lt;script src=&quot;.\/js\/BIT.all.js?${current.time.js}&quot;&gt;&lt;\/script&gt;&lt;\/html&gt;"
+               byline="true"
+			/> 
+		</sequential>
+		
+    </macrodef>
+    
+    
+    <macrodef name="concatCSS">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang" />
+        <sequential>
+            <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+        	<echo >CONCAT CSS files @{pLang}</echo>
+            <java
+             classname="concatCSS"
+             classpath="${classpath}"
+            >
+                <arg value="${absolute.path.@{pLang}}"/>
+                <arg value="${absolute.path.@{pLang}}/${main.index}"/>
+            </java>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="RemoveAllLinkTagsWithCSS">
+      <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang" />
+       <sequential>
+           <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+            <echo>Remove All LINK Stylesheet</echo>
+           	<replaceregexp file="${absolute.path.@{pLang}}/${main.index}"
+               match="&lt;link rel=&quot;stylesheet&quot;.*"
+               replace=" "
+               byline="true"
+			/>       
+			
+			     
+			
+		</sequential>
+		
+    </macrodef>
+    
+     <macrodef name="addAllCSSTag">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang" />
+       <sequential>
+           <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+            <echo>ADD ALL LINK(CSS) TAG @{pLang}</echo>
+           <tstamp>
+               <format property="current.time.js" pattern="yyyyMMdd_HHmmss" />
+           </tstamp>
+		<replaceregexp file="${absolute.path.@{pLang}}/${main.index}"
+               match="&lt;head&gt;"
+               replace="&lt;head&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;css\/all.css?${current.time.js}&quot;&gt;"
+               byline="true"
+			/> 
+		</sequential>
+		
+    </macrodef>
+    
+    <macrodef name="RemoveNotAllCSSFiles">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang" />
+       <sequential>
+           <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
+            <echo>Remove All CSS scripts not used</echo>
+           	<delete includeEmptyDirs="true">
+           		<fileset dir="${absolute.path.@{pLang}}/${main.css}" >
+  					<include name="**/*.*"/>
+  					<include name="**/*"/>
+  					<exclude name="**/*all*.css"/>
+				</fileset>
+  			</delete>
+           
+			
+			     
+			
+		</sequential>
+		
+    </macrodef>
+    
+    
+</project>

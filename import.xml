@@ -1,0 +1,550 @@
+<?xml version="1.0"?>
+
+<project name="BBuldier" default="ftp" basedir=".">
+  
+	<!-- Setting properties from project properites-->
+	<property name="path.builder" value="${path.bbuilder}"/>
+	<property name="path.project" value="."/>
+	<property file="${path.builder}/build.properties"/>
+	<!-- importing antcotrib to support extra tasks like "if" -->
+	
+	<taskdef resource="net/sf/antcontrib/antlib.xml" >
+		<classpath>
+			<pathelement location="${path.builder}/core/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+	<!-- loading core functions and plugins-->
+	
+	<import>
+		<fileset dir="${path.builder}/plugins" includes="**/*.xml">
+			<include name="**/*.xml"/>
+			<exclude name="**/src/*.*"/>
+		</fileset>
+		<fileset dir="${path.builder}/core" includes="**/*.xml"/>
+	</import>
+	
+	
+	<!-- MAIN TASKS -->
+	
+	<!-- NOT COPRESSED VERSION OF APP-->
+	 <target name="sendNotCompressed">
+            <checkProperties />
+            <delete dir="${path.project}/${main.target}"/>
+            <property name="lang" value="en-gb"/>
+            <property name="pLang" value="${lang}"/>
+            <echo>LANGUAGE ${pLang}</echo>
+            <createTarget pLang="${pLang}" />
+            <createRedirectIndex pLang="${pLang}"/>
+            
+            <removeLine name="en-gb.js" pLang="${pLang}"/>
+            <addCssLang pLang="${pLang}" />
+            <addLang pLang="${pLang}"/>
+            <removeDebugs pLang="${pLang}"/>
+            <cdnURLaddHTML pLang="${pLang}"/>
+            <cdnURLaddCSS pLang="${pLang}"/>
+            <generateLess pLang="${pLang}"/>
+            <removeLessLink pLang="${pLang}"/>
+            
+            <createCacheManifest pLang="${pLang}"/>
+            
+            
+            <zipTarget />
+            <sshToServ />
+            <get src="${release.link}&#38;project=${project.name}${project.version}&#38;file=${releaseFileName}" dest="${main.target}/temp"/>
+            
+            <removeTarget />
+            <echoDone />            
+  </target>
+	
+	<!-- SHORTCUT -->
+	<target name="snc" depends="sendNotCompressed"></target>
+	
+	<!-- SEND COPRESSED VERSION OF APP-->
+	
+	<target name="blackBerry">
+            <checkProperties />
+            <delete dir="${path.project}/${main.target}"/>
+            <property name="lang" value="en-gb"/>
+            <property name="pLang" value="${lang}"/>
+            <echo>LANGUAGE ${pLang}</echo>
+            <createTargetWithNoLangDir pLang="${pLang}" />
+
+            <!--<removeLine name="en-gb.js" pLang="${pLang}"/>-->
+            <!--<removeLine name="en-gb.css" pLang="${pLang}"/>-->
+            <!--<addCssLang pLang="${pLang}" />-->
+            <!--<addLang pLang="${pLang}"/>-->
+            <removeDebugs pLang=""/>
+            <generateLess pLang=""/>
+            <removeLessLink pLang=""/>
+            
+            <concatCSS pLang=""/>
+            <RemoveAllLinkTagsWithCSS pLang=""/>
+            <addAllCSSTag pLang=""/>
+            <RemoveNotAllCSSFiles pLang=""/>
+
+            <concatJS pLang=""/>
+            <RemoveAllScriptTagsWithSCR pLang=""/>
+            <addAllJsScriptTag pLang=""/>
+            <RemoveNotAllJSFiles pLang=""/>
+
+            <!--<minifyHTML pLang="${pLang}"/>-->
+            <minifyCSS pLang=""/>
+            <minifyJS pLang=""/>
+         
+            <zipTargetWithoutDate />
+
+            <echoDone />
+  </target>
+
+
+  <!-- SHORTCUT -->
+   <target name="bb" depends="blackBerry"></target>
+
+	<target name="miniPortal">
+
+            <checkProperties />
+            <property name="lang" value="en-gb"/>
+            <property name="pLang" value="${lang}"/>
+            <echo>LANGUAGE ${pLang}</echo>
+            <createTarget pLang="${pLang}" />
+            <createRedirectIndex pLang="${pLang}"/>
+
+            <removeLine name="en-gb.js" pLang="${pLang}"/>
+            <addCssLang pLang="${pLang}" />
+            <addLang pLang="${pLang}"/>
+            <removeDebugs pLang="${pLang}"/>
+            <generateLess pLang="${pLang}"/>
+            <removeLessLink pLang="${pLang}"/>
+
+            <concatCSS pLang="${pLang}"/>
+            <RemoveAllLinkTagsWithCSS pLang="${pLang}"/>
+            <addAllCSSTag pLang="${pLang}"/>
+            <RemoveNotAllCSSFiles pLang="${pLang}"/>
+
+
+            <concatJS pLang="${pLang}"/>
+            <RemoveAllScriptTagsWithSCR pLang="${pLang}"/>
+            <addAllJsScriptTag pLang="${pLang}"/>
+            <RemoveNotAllJSFiles pLang="${pLang}"/>
+            <includeManifest pLang="${pLang}"/>
+            <createCacheManifest pLang="${pLang}"/>
+
+            <minifyHTML pLang="${pLang}"/>
+            <addFileAfter pLang="${pLang}"/>
+            <minifyCSS  pLang="${pLang}"/>
+            <minifyJS pLang="${pLang}"/>
+            <basename property="dirname" file="${path.project}"/>
+
+            <delete dir="${path.project}/../../games/${dirname}"/>
+            <copy todir="${path.project}/../../games/${dirname}">
+                <fileset dir="${path.project}/${main.target}" />
+            </copy>
+            <delete dir="${path.project}/${main.target}"/>
+            <echoDone />
+  </target>
+	
+	<!-- SHORTCUT -->
+  <target name="mp" depends="miniPortal"></target>
+
+    <target name="miniPortalCombined">
+        <for param="folder">
+            <dirset id="dist.contents" dir="gamesSrc" includes="*" />
+        <sequential>
+            <ant antfile="build.xml" dir="@{folder}" inheritAll="false" target="mp" />
+        </sequential>
+        </for>
+    </target>
+    <target name="mpc" depends="miniPortalCombined"></target>
+
+
+    <target name="phoneGap">
+        <checkProperties />
+        <delete dir="${path.project}/${main.target}"/>
+        <property name="lang" value="en-gb"/>
+        <property name="pLang" value="${lang}"/>
+        <echo>LANGUAGE ${pLang}</echo>
+        <createTarget pLang="${pLang}" />
+        <createRedirectIndex pLang="${pLang}"/>
+
+        <removeLine name="en-gb.js" pLang="${pLang}"/>
+        <addCssLang pLang="${pLang}" />
+        <addLang pLang="${pLang}"/>
+        <removeDebugs pLang="${pLang}"/>
+        <generateLess pLang="${pLang}"/>
+        <removeLessLink pLang="${pLang}"/>
+
+        <concatCSS pLang="${pLang}"/>
+        <RemoveAllLinkTagsWithCSS pLang="${pLang}"/>
+        <addAllCSSTag pLang="${pLang}"/>
+        <RemoveNotAllCSSFiles pLang="${pLang}"/>
+
+
+        <concatJS pLang="${pLang}"/>
+        <RemoveAllScriptTagsWithSCR pLang="${pLang}"/>
+        <addAllJsScriptTag pLang="${pLang}"/>
+        <RemoveNotAllJSFiles pLang="${pLang}"/>
+        <includeManifest pLang="${pLang}"/>
+        <createCacheManifest pLang="${pLang}"/>
+
+        <!--<minifyHTML pLang="${pLang}"/>-->
+        <minifyCSS pLang="${pLang}"/>
+        <minifyJS pLang="${pLang}"/>
+
+        <!-- specjalnie dla W. na chama zrobione -->
+        <delete dir="${path.project}/../assets/www"/>
+        <mkdir dir="${path.project}/../assets/www"/>
+        <copy todir="${path.project}/../assets/www" verbose="false">
+            <fileset dir="${path.project}/${main.target}/${pLang}">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <delete dir="${path.project}/${main.target}"/>
+        <echoDone />
+    </target>
+
+    <!-- SHORTCUT -->
+    <target name="pg" depends="phoneGap"></target>
+
+    <target name="sendCompressed">
+            <checkProperties />
+            <delete dir="${path.project}/${main.target}"/>
+            <property name="lang" value="en-gb"/>
+            <property name="pLang" value="${lang}"/>
+            <echo>LANGUAGE ${pLang}</echo>
+            <createTarget pLang="${pLang}" />
+            <createRedirectIndex pLang="${pLang}"/>
+
+            <removeLine name="en-gb.js" pLang="${pLang}"/>
+            <addCssLang pLang="${pLang}" />
+            <addLang pLang="${pLang}"/>
+            <removeDebugs pLang="${pLang}"/>
+            <cdnURLaddHTML pLang="${pLang}"/>
+            <cdnURLaddCSS pLang="${pLang}"/>
+            <generateLess pLang="${pLang}"/>
+            <removeLessLink pLang="${pLang}"/>
+
+            <concatCSS pLang="${pLang}"/>
+            <RemoveAllLinkTagsWithCSS pLang="${pLang}"/>
+            <addAllCSSTag pLang="${pLang}"/>
+            <RemoveNotAllCSSFiles pLang="${pLang}"/>
+
+
+            <concatJS pLang="${pLang}"/>
+            <RemoveAllScriptTagsWithSCR pLang="${pLang}"/>
+            <addAllJsScriptTag pLang="${pLang}"/>
+            <RemoveNotAllJSFiles pLang="${pLang}"/>
+            <includeManifest pLang="${pLang}"/>
+            <createCacheManifest pLang="${pLang}"/>
+
+            <!--<minifyHTML pLang="${pLang}"/>-->
+            <addFileAfter pLang="${pLang}"/>
+            <minifyCSS pLang="${pLang}"/>
+            <minifyJS pLang="${pLang}"/>
+
+            <zipTarget />
+
+            <sshToServ />
+            <get src="${release.link}&#38;project=${project.name}${project.version}&#38;file=${releaseFileName}" dest="${main.target}/temp"/>
+
+            <removeTarget />
+
+            <echoDone />
+  </target>
+
+	<!-- SHORTCUT -->
+  <target name="sc" depends="sendCompressed"></target>
+
+	<target name="compressLocal">
+            <checkProperties />
+            <delete dir="${path.project}/${main.target}"/>
+            <property name="lang" value="en-gb"/>
+            <property name="pLang" value="${lang}"/>
+            <echo>LANGUAGE ${pLang}</echo>
+            <createTarget pLang="${pLang}" />
+            <createRedirectIndex pLang="${pLang}"/>
+
+            <removeLine name="en-gb.js" pLang="${pLang}"/>
+            <addCssLang pLang="${pLang}" />
+            <addLang pLang="${pLang}"/>
+            <removeDebugs pLang="${pLang}"/>
+            <generateLess pLang="${pLang}"/>
+            <removeLessLink pLang="${pLang}"/>
+
+            <concatCSS pLang="${pLang}"/>
+            <RemoveAllLinkTagsWithCSS pLang="${pLang}"/>
+            <addAllCSSTag pLang="${pLang}"/>
+            <RemoveNotAllCSSFiles pLang="${pLang}"/>
+
+
+            <concatJS pLang="${pLang}"/>
+            <RemoveAllScriptTagsWithSCR pLang="${pLang}"/>
+            <addAllJsScriptTag pLang="${pLang}"/>
+            <RemoveNotAllJSFiles pLang="${pLang}"/>
+            <includeManifest pLang="${pLang}"/>
+            <createCacheManifest pLang="${pLang}"/>
+
+            <!--<minifyHTML pLang="${pLang}"/>-->
+            <minifyCSS pLang="${pLang}"/>
+            <minifyJS pLang="${pLang}"/>
+
+            <echoDone />
+  </target>
+  
+  <!-- SHORTCUT -->
+  <target name="cl" depends="compressLocal"></target>
+
+
+    <target name="aarpLocal">
+        <checkProperties />
+        <delete dir="${path.project}/${main.target}"/>
+        <property name="lang" value="en-gb"/>
+        <property name="pLang" value="${lang}"/>
+        <echo>LANGUAGE ${pLang}</echo>
+        <createTargetAARP pLang="${pLang}" />
+        <createRedirectIndex pLang="${pLang}"/>
+
+        <!--  <removeLine name="en-gb.js" pLang="${pLang}"/> -->
+          <addCssLang pLang="${pLang}" />
+        <!--  <addLang pLang="${pLang}"/> -->
+        <removeDebugs pLang="${pLang}"/>
+        <generateLess pLang="${pLang}"/>
+        <removeLessLink pLang="${pLang}"/>
+
+       <!-- <concatCSS pLang="${pLang}"/>
+        <RemoveAllLinkTagsWithCSS pLang="${pLang}"/>
+        <addAllCSSTag pLang="${pLang}"/>
+        <RemoveNotAllCSSFiles pLang="${pLang}"/> -->
+
+
+       <!-- <concatJS pLang="${pLang}"/>
+        <RemoveAllScriptTagsWithSCR pLang="${pLang}"/>
+        <addAllJsScriptTag pLang="${pLang}"/>
+        <RemoveNotAllJSFiles pLang="${pLang}"/>
+        <includeManifest pLang="${pLang}"/>
+        <createCacheManifest pLang="${pLang}"/> -->
+
+        <!--<minifyHTML pLang="${pLang}"/>-->
+        <!--<minifyCSS pLang="${pLang}"/>
+        <minifyJS pLang="${pLang}"/> -->
+
+        <zipApp pLang="${pLang}"/>
+
+        <echoDone />
+    </target>
+
+    <!-- SHORTCUT -->
+    <target name="aarp" depends="aarpLocal"></target>
+
+
+	
+	<!-- SEND ALL LANGUAGES/COMPRESSED -->
+	 <target name="sendCompressedAllLanguages">
+        <checkProperties />
+        <delete dir="${path.project}/${main.target}"/>
+        <createEmptyTarget />
+        <createRedirectIndex pLang="en-gb"/>
+        <for param="url">
+        <path>
+          <fileset dir="${path.project}">
+            <include name="${main.i18n}/**/*.*"/>
+          </fileset>
+        </path>
+        <sequential>
+        
+            <!-- this is UUGLY workaround but basename property is "write once" propery -->
+            <basename property="file.@{url}" file="@{url}" suffix=".js"/>
+            <echo>LANGUAGE ${file.@{url}}</echo>
+            
+            <createTarget pLang="${file.@{url}}"/>
+        
+            <removeLine name="en-gb.js" pLang="${file.@{url}}"/>
+            <addCssLang pLang="${file.@{url}}" />
+            <addLang pLang="${file.@{url}}"/>
+            <removeDebugs pLang="${file.@{url}}"/>
+            <cdnURLaddHTML pLang="${pLang}"/>
+            <cdnURLaddCSS pLang="${pLang}"/>
+            <generateLess pLang="${file.@{url}}"/>
+            <removeLessLink pLang="${file.@{url}}"/>  
+        
+            <concatCSS pLang="${file.@{url}}"/>
+            <RemoveAllLinkTagsWithCSS pLang="${file.@{url}}"/>
+            <addAllCSSTag pLang="${file.@{url}}"/>
+            <RemoveNotAllCSSFiles pLang="${file.@{url}}"/>
+            
+            <concatJS pLang="${file.@{url}}"/>
+            <RemoveAllScriptTagsWithSCR pLang="${file.@{url}}"/>
+            <addAllJsScriptTag pLang="${file.@{url}}"/>
+            <RemoveNotAllJSFiles pLang="${file.@{url}}"/>
+            <includeManifest pLang="${file.@{url}}"/>
+            <createCacheManifest pLang="${file.@{url}}"/>
+            
+            <minifyHTML pLang="${file.@{url}}"/>
+            <minifyCSS pLang="${file.@{url}}"/>
+            <minifyJS pLang="${file.@{url}}"/>
+         
+         </sequential>
+    </for>
+        
+    <zipTarget />
+    <sshToServ />
+    <get src="${release.link}&#38;project=${project.name}${project.version}&#38;file=${releaseFileName}" dest="${main.target}/temp"/>
+    <removeTarget />
+    <echoDone />    
+         
+       
+  </target>
+	
+	<!-- SHORTCUT -->
+	<target name="scal" depends="sendCompressedAllLanguages"></target>
+	
+	
+	<!-- RELEASE STABLE. TAKES WHATEVER WAS RELEASED ON PROJECT TEST LINK AND MAKE IT STABLE -->
+	
+  <target name="stablerelese">
+     <createEmptyTarget />
+     <get src="${release.link}&#38;project=${project.name}${project.version}&#38;action=stablerelease" dest="${main.target}/temp"/>
+     <removeTarget />
+     <echoDone />
+  </target>  
+  
+	<target name="sr" depends="stablerelese"/>
+	
+	
+	<!-- GENERATE LANGUAGES. GETS I18NSOURCE FOLDER AND CREATE LOCALISATION JS FILES -->
+	
+	<target name="exportLangs" >
+	  <exportLangs />
+	  <echoDone />
+	</target>
+	<target name="el" depends="exportLangs"/>
+
+
+
+    <target name="merge" >
+        <merge />
+        <echoDone />
+    </target>
+    <target name="mr" depends="merge"/>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- HERE IS WHAT YOU NEED TO READ-->
+	<target name="createCSSinProject">
+    <generateLessInProject />
+    <echoDone />
+  </target> 
+	<target name="gcss" depends="createCSSinProject"></target>
+  
+	
+	
+	<target name="compressIMG">
+	  <prepareFolders />
+	 <optipng />
+	 <pngcrush />
+	  <pngquant />
+	  <compressJPG />
+	  <echoDone />
+	</target> 
+
+  <target name="storeImages4Loader">
+    
+   <echo file="${path.project}/${main.js}/${outPutFile.name}">${imagesfile.start}</echo> 
+     <for param="url">
+        <path>
+          <fileset dir="${path.project}">
+            <include name="${main.img}/**/*.*"/>
+          </fileset>
+        </path>
+        <sequential>
+          <propertyregex property="filePath.@{url}"
+              input="@{url}"
+              regexp="(.*)/${main.img}(.*)"
+              select="\2"
+              casesensitive="false" />
+              <echo>${imgInput.start}${main.img}${filePath.@{url}}${imgInput.end}</echo>
+              <concat destfile="${path.project}/${main.js}/${outPutFile.name}" append="true">${imgInput.start}${main.img}${filePath.@{url}}${imgInput.end}</concat>
+        </sequential>
+    </for>
+   <concat destfile="${path.project}/${main.js}/${outPutFile.name}" append="true">${imagesfile.end}</concat>
+    <echoDone />    
+    
+   
+    
+   
+  </target> 
+ 	
+
+ 
+	
+  <target name="unitTest">
+    <createStructure />
+    <runServer />
+    <cleanStructure />
+    <echoDone />
+  </target> 
+	<target name="ut" depends="unitTest"></target>
+	
+	
+	<target name="unitTestCoverage">
+    <createStructure />
+    <runServer />
+    <genCoverageReport />
+    <cleanStructure />
+    <echoDone />
+  </target> 
+  <target name="utc" depends="unitTestCoverage"></target>
+	
+	<target name="generateDocs">
+    <createDocs />
+    <echoDone />
+  </target> 
+  <target name="gd" depends="generateDocs"></target>
+	
+
+  
+  <!-- Aliases-->
+  <target name="ci" depends="compressIMG"></target> 
+  
+  <target name="si4l" depends="storeImages4Loader"/>
+  
+  
+</project>

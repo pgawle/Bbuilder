@@ -1,0 +1,228 @@
+<!-- Target to files on server with FTP protocol. Credentials defined in project.properties -->
+
+  
+  
+  <target name="ftp" >
+    <createTarget />
+    
+    <!-- Merge CSS, remove not merged CSS links from index.html, add all.css to index.html-->
+    <concatCSS />
+    <RemoveAllLinkTagsWithCSS />
+    <addAllCSSTag/>
+    <RemoveNotAllCSSFiles />
+    
+    <!-- remove Debug.js from index.html, Merge JS, remove not merged JS links from index.html, add all.js to index.html-->
+    <removeDebugJS />
+    <concatJS />
+    <RemoveAllScriptTagsWithSCR />
+    <addAllJsScriptTag />
+    <RemoveNotAllJSFiles />
+
+    <!-- minify HTML, CSS and JS -->
+    <minifyHTML />
+    <minifyCSS />
+    <minifyJS />
+    <!-- send all files on FTP server, defined in project.properties -->
+    <onServerFTP />
+
+    <removeTarget />
+    <echoDone />
+  </target>
+
+
+  <!-- Target to quick send files on server (no images) -->
+  <target name="ftpNI" >
+    <createTargetNoIMG />
+    
+    <!-- Merge CSS, remove not merged CSS links from index.html, add all.css to index.html-->
+    <concatCSS />
+    <RemoveAllLinkTagsWithCSS />
+    <addAllCSSTag/>
+    <RemoveNotAllCSSFiles />
+    
+    <!-- remove Debug.js from index.html, Merge JS, remove not merged JS links from index.html, add all.js to index.html-->
+    <removeDebugJS />
+    <concatJS />
+    <RemoveAllScriptTagsWithSCR />
+    <addAllJsScriptTag />
+    <RemoveNotAllJSFiles />
+
+    <!-- minify HTML, CSS and JS -->
+    <minifyHTML />
+    <minifyCSS />
+    <minifyJS />
+    <!-- send all files on FTP server, defined in project.properties -->
+    <onServerFTP />
+
+    <removeTarget />
+    <echoDone />
+  </target>
+  
+  
+  
+  
+  <target name="ssh">
+    <createTarget />
+    
+    <concatCSS />
+    <RemoveAllLinkTagsWithCSS />
+    <addAllCSSTag/>
+    <RemoveNotAllCSSFiles />
+    
+    <removeDebugJS />
+    <concatJS />
+    <RemoveAllScriptTagsWithSCR />
+    <addAllJsScriptTag />
+    <RemoveNotAllJSFiles />
+    
+    <minifyHTML />
+    <minifyCSS />
+    <minifyJS />
+    
+    <zipTarget />
+    <sshToServ />
+    <get src="${release.link}" dest="${target.dir}/temp"/>
+    
+    <removeTarget />
+    <echoDone />
+  </target>
+  
+  <target name="sshTest">
+    <createTargetWithExample />
+    
+    <!--<removeDebugJS />-->
+    
+    <zipTarget />
+    <sshToServ />
+    <get src="${release.link}" dest="${target.dir}/temp"/>
+    
+    <removeTarget />
+    <echoDone />
+  </target>
+  
+  
+    
+  <macrodef name="cleanHTMLfromCSS" >
+    <sequential>
+            <echo>Remove</echo>
+            <replaceregexp file="${path.project}/${target.dir}/index.html"
+               match="^&lt;script.*&lt;\/script&gt;"
+               replace=" "
+               byline="true"
+      />       
+    </sequential>
+    
+    
+    <macrodef name="createTarget2">
+    <attribute name="pTarget" default="${path.project}/${target.dir}"/>
+    <attribute name="pLang" default="en-gb"/>
+    <sequential>
+      <mkdir dir="@{pTarget}/@{pLang}"/>
+      <copy todir="@{pTarget}/@{pLang}" verbose="false">
+        <fileset dir="${path.project}">
+          <include name="${folder.js}/**/*.*"/>
+          <include name="${folder.css}/*.*"/>
+          <include name="${folder.img}/**/*.*"/>
+          <include name="${folder.i18n}/**/@{pLang}.js"/>
+          <include name="${folder.fonts}/**/*.*"/>
+          <include name="index.html"/>
+          <exclude name="${folder.js}/**/Debug.js"/>
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef>
+  
+  
+  <macrodef name="createTargetWithExample">
+    <sequential>
+      <delete dir="${path.project}/${target.dir}"/>
+      <mkdir dir="${path.project}/${target.dir}"/>
+      <copy todir="${path.project}/${target.dir}" verbose="true">
+        
+        <fileset dir="${path.project}">
+          <include name="${folder.js}/**/*.*"/>
+          <include name="${folder.css}/*.*"/>
+          <include name="${folder.img}/**/*.*"/>
+          <include name="${folder.i18n}/**/*.*"/>
+          <include name="${folder.fonts}/**/*.*"/>
+          <include name=".htaccess"/>
+          <include name="testredirect.html"/>
+          <include name="index.html"/>
+          <include name="componentExampleMobile.html"/>
+          <include name="componentExampleFruits.html"/>
+          <!--<exclude name="${folder.js}/**/Debug.js"/>-->
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="createTarget">
+    <sequential>
+      <delete dir="${path.project}/${target.dir}"/>
+      <mkdir dir="${path.project}/${target.dir}"/>
+      <copy todir="${path.project}/${target.dir}" verbose="true">
+        
+        <fileset dir="${path.project}">
+          <include name="${folder.js}/**/*.*"/>
+          <include name="${folder.css}/*.*"/>
+          <include name="${folder.img}/**/*.*"/>
+          <include name="${folder.i18n}/**/*.*"/>
+          <include name="${folder.fonts}/**/*.*"/>
+          <include name="index.html"/>
+          <exclude name="${folder.js}/**/Debug.js"/>
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="createTargetNoIMG">
+    <sequential>
+      <delete dir="${path.project}/${target.dir}"/>
+      <mkdir dir="${path.project}/${target.dir}"/>
+      <copy todir="${path.project}/${target.dir}" verbose="true">
+        
+        <fileset dir="${path.project}">
+          <include name="${folder.js}/**/*.*"/>
+          <include name="${folder.css}/*.*"/>
+          <include name="index.html"/>
+          <exclude name="${folder.js}/**/Debug.js"/>
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef>
+  
+    <target name="ssh2">
+            <delete dir="${path.project}/${target.dir}"/>
+            
+            <!--- PUT HERE DIFFERENT LANGUAGE CODE TO TEST-->
+            <property name="Lang" value="pl-pl"/>
+            <echo>LANGUAGE ${Lang}</echo>
+            
+            <createTarget2 pLang="${Lang}"/>
+        
+            <concatCSS pLang="${Lang}"/>
+            <RemoveAllLinkTagsWithCSS pLang="${Lang}"/>
+            <addAllCSSTag pLang="${Lang}"/>
+            <RemoveNotAllCSSFiles pLang="${Lang}"/>
+            
+            <!-- here is removing all scripts tags with name="debug" -->
+            <removeDebugJS pLang="${Lang}"/>
+            <addLang pLang="${Lang}"/>
+            <concatJS pLang="${Lang}"/>
+            <RemoveAllScriptTagsWithSCR pLang="${Lang}"/>
+            <addAllJsScriptTag pLang="${Lang}"/>
+            <RemoveNotAllJSFiles pLang="${Lang}"/>
+            
+            <minifyHTML pLang="${Lang}"/>
+            <minifyCSS pLang="${Lang}"/>
+            <minifyJS pLang="${Lang}"/>
+            <zipTarget />
+            <sshToServ />
+            <get src="${release.link}" dest="${target.dir}/temp"/>
+            <removeTarget />
+            <echoDone />    
+         
+       
+  </target>
+  
+  

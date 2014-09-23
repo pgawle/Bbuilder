@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project name="jsTestDriver">
+  <path id="task.classpath">
+    <pathelement location="${path.builder}/plugins/jsTestDriver/lib/" />
+    <pathelement location="${path.builder}\plugins\jsTestDriver\lib\JsTestDriver-1.3.4.b.jar" />
+  </path>
+  <macrodef name="createStructure">
+    <sequential>
+    <mkdir dir="${path.project}/${tests.path}/reports"/>
+    <touch file="${path.project}/${tests.confFile.path}/BBuilderJSTestDriverConf.jstd" />
+    <concat destfile="${path.project}/${tests.confFile.path}/BBuilderJSTestDriverConf.jstd" append="true">
+        <filelist dir="${path.project}/${tests.confFile.path}/" files="${tests.confFile.name}"/>
+    </concat>
+    <concat destfile="${path.project}/${tests.confFile.path}/BBuilderJSTestDriverConf.jstd" append="true">
+plugin:
+- name: "coverage"
+  jar: "${path.builder}/plugins/jsTestDriver/lib/coverage-1.3.4.b.jar"
+  module: "com.google.jstestdriver.coverage.CoverageModule"
+    </concat>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="cleanStructure">
+    <sequential>
+     <delete dir="${path.project}/${tests.confFile.path}/reports"/>
+     <delete file="${path.project}/${tests.confFile.path}/BBuilderJSTestDriverConf.jstd"/>
+    </sequential>
+  </macrodef>
+  
+	<macrodef name="runServer">
+		<sequential>
+			<property name="absoluteConf.dir" location="${path.project}/${tests.confFile.path}"/>
+      <echo message="${absoluteConf.dir}" />
+                <java jar="${path.builder}\plugins\jsTestDriver\lib\JsTestDriver-1.3.4.b.jar" 
+resultproperty="unitTestsPassed" 
+                      dir="${path.builder}\plugins\jsTestDriver\lib" fork="true"> 
+                     
+                      <arg value="--config" /> 
+                      <arg value="${absoluteConf.dir}/BBuilderJSTestDriverConf.jstd" />
+                      <arg value="--port" /> 
+                      <arg value="42442" />
+                      <arg value="--browser" /> 
+                      <arg value="${tests.browserUrl.chrome}" /> 
+                      <arg value="--tests" /> 
+                      <arg value="all" />
+                      <arg value="--testOutput" /> 
+                      <arg value="${absoluteConf.dir}/reports" />
+                    <!--  <arg value="runnerMode" />
+                      <arg value="DEBUG" /> --> 
+                       
+                </java> 
+		</sequential>
+	</macrodef>
+	
+	 <macrodef name="genCoverageReport">
+    <sequential>
+      <property name="absoluteConf.dir" location="${path.project}/${tests.confFile.path}"/>
+      <echo message="${absoluteConf.dir}" />
+      <delete>
+              <fileset dir="${path.project}/${tests.path}/coverage">
+                <include name="**/**/*.*"/>
+              </fileset> 
+      </delete>
+                <exec executable="perl">
+                <arg value="-s"/>
+                <arg value="${path.builder}/plugins/jsTestDriver/lib/genhtml.pl"/>
+                <arg value="${absoluteConf.dir}/reports/jsTestDriver.conf-coverage.dat"/>
+                <arg value="-o"/>
+                <arg value="${absoluteConf.dir}/coverage"/>
+                </exec>
+    </sequential>
+  </macrodef>
+	
+</project>

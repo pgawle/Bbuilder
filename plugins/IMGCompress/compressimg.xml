@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<project name="compressimg.ANT">
+  
+  
+  <macrodef name="prepareFolders">
+    <sequential>
+    <if>
+        <available file="${path.project}/${main.imgSource}" type="dir" />
+    <then>
+          <delete>
+              <fileset dir="${path.project}/${main.img}">
+                <include name="**/*.png"/>
+                <include name="**/*.jpg"/>
+                <include name="**/*.gif"/>
+              </fileset> 
+         </delete>
+         <copy todir="${path.project}/${main.img}" overwrite="true">
+              <fileset dir="${path.project}/${main.imgSource}" >
+                <include name="**/*.png"/>
+                <include name="**/*.jpg"/>
+                <include name="**/*.gif"/>
+              </fileset>
+         </copy>
+    </then>
+    <else>
+        <echo>Hey! source folder for images ${main.imgSource} do not exist in project folder. Create it and fill with proper images.</echo>
+    </else>
+</if>
+    
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="compressJPG">
+    
+    <!-- Hey! Most of the code here is taken from HTML5 Boilerpate http://html5boilerplate.com/-->
+    <sequential>
+      <echo>Optimising JPG with JPEGTRAN</echo>
+      <property environment="ENV" />
+     <!-- On *nix's and OS X, check for jpegtran and give a helpful message if it's not installed -->
+        <if>
+            <and>
+                <os family="unix" />
+                <available file="jpegtran" filepath="${ENV.PATH}" />
+            </and>
+            <then>
+               
+               <mkdir dir="imgTemp"/>
+              <copy todir="imgTemp">
+                <fileset dir="${path.project}/${main.img}" >
+                  <include name="**/*.jpg"/>
+                </fileset>
+              </copy>
+                 <delete>
+              <fileset dir="${path.project}/${main.img}">
+                <include name="**/*.jpg"/>
+              </fileset> 
+              </delete>
+               <echo>[BZZZZZZ] IT CAN TAKE LOOONG TIME...BE PATIENT</echo>
+               <apply executable="jpegtran" dest="${path.project}/${main.img}" osfamily="unix">
+                    <fileset dir="${path.project}/imgTemp" includes="**/*.jpg"/>
+                    <arg value="-copy"/>
+                    <arg value="none"/>
+                    <arg value="-optimize"/>
+                    <arg value="-outfile"/>
+                    <targetfile/>
+                    <srcfile/>
+                    <mapper type="identity"/>
+                </apply>
+                
+                <delete dir="${path.project}/imgTemp"/>
+            </then>
+            <elseif>
+                <os family="unix" />
+                <then>
+                    <echo message="*** jpegtran NOT INSTALLED. SKIPPING OPTIMIZATION OF JPEGs." />
+                    <echo message="*** Install jpegtran to enable jpeg optimization." />
+                    <echo message="*** For instructions see check BBuilder instruction on BushidoWiki" />
+                </then>
+            </elseif>
+        </if>
+           <apply executable="${path.builder}/plugins/IMGCompress/lib/jpegtran.exe" dest="${path.project}/${main.img}" osfamily="windows">
+            <fileset dir="${path.project}/${main.imgSource}" includes="**/*.jpg"  />
+            <arg value="-copy"/>
+            <arg value="none"/>
+            <arg value="-optimize"/>
+            <arg value="-outfile"/>
+            <targetfile/>
+            <srcfile/>
+            <mapper type="identity"/>
+        </apply>
+
+    
+    </sequential> 
+  </macrodef>
+  
+  
+   <macrodef name="pngquant">
+     <sequential>
+        <apply executable="${path.builder}/plugins/IMGCompress/lib/pngquant-mac" osfamily="unix"> 
+                     <arg value="-f"/>
+                     <arg value="-ext"/>
+                     <arg value=".png"/>
+                     <arg value="-speed"/>
+                     <arg value="1"/>
+                    <fileset dir="${path.project}/${main.img}">
+                       <patternset>
+                       <include name="**/*.png"/>
+                    </patternset>
+                    </fileset>
+                    <mapper type="identity"/>
+        </apply>  
+        
+        <apply executable="${path.builder}/plugins/IMGCompress/lib/pngquanti.exe" osfamily="windows"> 
+                     <arg value="-f"/>
+                     <arg value="-ext"/>
+                     <arg value=".png"/>
+                     <arg value="-speed"/>
+                     <arg value="1"/>
+                    <fileset dir="${path.project}/${main.img}">
+                       <patternset>
+                       <include name="**/*.png"/>
+                    </patternset>
+                    </fileset>
+                    <mapper type="identity"/>
+        </apply>        
+     </sequential>
+   </macrodef>
+  
+  <macrodef name="pngcrush">
+    <sequential>
+    <echo>Removing unsed data with PNGCRUNCH</echo>
+    <property environment="ENV" />
+     <mkdir dir="imgTemp"/>
+              <copy todir="imgTemp">
+                <fileset dir="${path.project}/${main.img}" >
+                  <include name="**/*.png"/>
+                </fileset>
+              </copy>
+                 <delete>
+              <fileset dir="${path.project}/${main.img}">
+                <include name="**/*.png"/>
+              </fileset> 
+              </delete>
+    <if>
+          <and>
+             <os family="unix" />
+             <available file="pngcrush" filepath="${ENV.PATH}"/>
+          </and>
+          <then>
+             
+              <echo>[BZZZZZZ] IT CAN TAKE LOOONG TIME...BE PATIENT</echo>
+              <apply executable="pngcrush" dest="${path.project}/${main.img}" osfamily="unix">
+                    <fileset dir="${path.project}/imgTemp" includes="**/*.png"  />
+                    <arg value="-rem"/>
+                    <arg value="allb"/>
+                    <arg value="-reduce"/>
+                    <arg value="-q"/>
+                    <srcfile/>
+                    <targetfile/>
+                    <mapper type="identity"/>
+               </apply>     
+               
+             
+                 
+            </then>
+            <elseif>
+                <os family="unix" />
+                <then>
+                    <echo message="*** pngcrush NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                    <echo message="*** Install optipng to enable png optimization." />
+                    <echo message="*** For instructions see check BBuilder instruction on BushidoWiki" />
+                </then>
+            </elseif>
+        </if>
+        
+        
+        
+        
+         <apply executable="${path.builder}/plugins/IMGCompress/lib/pngcrush.exe" dest="${path.project}/${main.img}" osfamily="windows">
+            <fileset dir="${path.project}/imgTemp" includes="**/*.png" />
+             <arg value="-rem"/>
+                    <arg value="allb"/>
+                    <arg value="-reduce"/>
+                    <arg value="-q"/>
+                    <srcfile/>
+                    <targetfile/>
+            <mapper type="identity"/>
+        </apply>
+        
+      <delete dir="${path.project}/imgTemp"/>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="optipng">
+    <sequential>
+      <property environment="ENV" />
+       <echo>Optimising with OPTIPNG</echo>
+      <!--- THIS IS TAKEN FROM HTML5 BOILERPLATE FOR DETAILS CHECK PAGE : http://html5boilerplate.com/ -->
+      <!-- osfamily=unix is actually true on OS X as well -->
+      <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
+        <mkdir dir="imgTemp"/>
+              <copy todir="imgTemp">
+                <fileset dir="${path.project}/${main.img}" >
+                  <include name="**/*.png"/>
+                </fileset>
+              </copy>
+                 <delete>
+              <fileset dir="${path.project}/${main.img}">
+                <include name="**/*.png"/>
+              </fileset> 
+              </delete>
+      <if>
+          <and>
+             <os family="unix" />
+             <available file="optipng" filepath="${ENV.PATH}"/>
+          </and>
+          <then>
+              <echo>[BZZZZZZ] IT CAN TAKE LOOONG TIME...BE PATIENT</echo>
+                <apply executable="optipng" dest="${path.project}/${main.img}" osfamily="unix">
+                    <fileset dir="${path.project}/imgTemp" includes="**/*.png"  />
+                    <arg value="-quiet"/>
+                    <arg value="-o7"/>
+                    <arg value="-out"/>
+                    <targetfile/>
+                    <srcfile/>
+                    <mapper type="identity"/>
+          </apply> 
+                
+            </then>
+            <elseif>
+                <os family="unix" />
+                <then>
+                    <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                    <echo message="*** Install optipng to enable png optimization." />
+                    <echo message="*** For instructions see check BBuilder instruction on BushidoWiki" />
+                </then>
+            </elseif>
+        </if>
+        
+        
+        <echo>[BZZZZZZ] IT CAN TAKE LOOONG TIME...BE PATIENT</echo>
+        <apply executable="${path.builder}/plugins/IMGCompress/lib/optipng.exe" dest="${path.project}/${main.img}" osfamily="windows">
+            <fileset dir="${path.project}/${main.imgTemp}" includes="**/*.png" />
+            <arg value="-quiet"/>
+            <arg value="-o7"/>
+            <arg value="-out"/>
+            <targetfile/>
+            <srcfile/>
+            <mapper type="identity"/>
+        </apply>
+
+         <delete dir="${path.project}/imgTemp"/>
+        
+        
+    </sequential>
+  </macrodef>
+</project>

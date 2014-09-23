@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<project name="crunchPNGOptiPng">
+	<macrodef name="crunchPNGOptiPng">
+		<sequential>
+		<condition property="extension" value=".exe">
+				<os family="windows"/>
+			</condition>
+			<!-- To Remember ANT doesn't overwrite property that already has been set -->
+			<property name="extension" value=""/>
+			
+			<apply executable="./plugins/crunchPNG.optiPng/lib/optipng${extension}">
+				<arg value="-o7"/>
+				<fileset dir="../${target.dir}/${folder.img}">
+					<patternset>
+						<include name="**/*.png"/>
+					</patternset>
+				</fileset>
+			</apply>
+		</sequential>
+	</macrodef>
+</project>

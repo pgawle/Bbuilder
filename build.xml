@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<project name="compileJava" default="cConcat" basedir=".">
+  <target name="cYUI">
+    <delete file=".\plugins\tasks.YUI.2.4.6\lib\*.class"/>
+    <javac srcdir=".\plugins\tasks.YUI.2.4.6\lib"
+    destdir=".\plugins\tasks.YUI.2.4.6\lib"
+    classpath=".\plugins\;.\plugins\tasks.YUI.2.4.6\lib\yuicompressor-2.4.6.jar"
+    />
+  </target>
+  <target name="cConcat">
+    <delete file=".\plugins\concat\lib\*.class"/>
+    <javac srcdir=".\plugins\concat\lib"
+    destdir=".\plugins\concat\lib"
+    classpath=".\plugins\;.\plugins\concat\lib\jericho-html-3.2.jar"
+    />
+  </target>
+</project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

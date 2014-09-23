@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<project name="CDNPlugin">
+  
+   <macrodef name="rhinoscript">
+        <!-- 
+          WGRYWA WSZYTSKIE POTRZEBNE BIBIOLTEKI I PODLACZA METODY Z SHELLA RHINO
+          DO WYKORZYSTANIA
+          https://developer.mozilla.org/en-US/docs/Rhino/Shell
+          
+          inne linki do przeczytania
+          
+          http://jeffreysambells.com/2012/02/20/using-javascript-to-parse-json-properties-with-ant
+http://weblogs.java.net/blog/emcmanus/archive/2010/09/20/using-javascript-make-apache-ant-less-painful
+http://www.angrycoding.com/2011/08/running-javascript-using-apache-ant.html
+http://en.wikipedia.org/wiki/Rhino_(JavaScript_engine)
+http://ejohn.org/blog/bringing-the-browser-to-the-server/
+http://stackoverflow.com/questions/4129855/parse-xml-in-javascript-no-browser-no-xml-parser
+https://github.com/gmosx/htmlparser/blob/master/README.md
+http://stackoverflow.com/questions/3526960/using-recent-rhino-in-ant-script
+http://mail-archives.apache.org/mod_mbox/ant-user/201008.mbox/%3C4C711FF9.1050601@cs.mcgill.ca%3E
+http://stackoverflow.com/questions/650377/javascript-rhino-use-library-or-include-other-scripts
+http://www.sitepen.com/blog/2001/09/25/javascript-and-ant/
+http://ejohn.org/blog/pure-javascript-html-parser/
+http://www.envjs.com/
+
+          
+          -->
+         <text name="text"/>
+
+         <sequential>
+               <script language="javascript" manager="bsf">
+
+                 <classpath>
+                 <fileset dir="${path.builder}/plugins/CDN/lib">
+                   <!-- potrzebne dwa bsf jako managery 
+                   jeden normalny drugi apacha, ale dlaczego to nikt nie wie
+                   nazywam to Java Magic
+                    -->
+                   <include name="ant-apache-bsf-1.7.1.jar" />
+                   <include name="bsf.jar" />
+                   <include name="commons-logging-1.1.1.jar" />
+                   <include name="rhino.jar" />
+                 </fileset>
+                 
+                 </classpath>
+                  <![CDATA[
+
+                     importPackage(java.lang, java.util, java.io);
+                      
+                     //System.out.println("Hello from JavaScript!!");
+
+                     //create shell, execute something and grab global
+
+                     var shell = org.mozilla.javascript.tools.shell.Main;
+
+                     var args = ["-e","var a='STRING';"];
+
+                     shell.exec(args);
+
+                     var shellGlobal = shell.global;
+
+                     //grab functions from shell global and place in current global
+
+                     var load=shellGlobal.load;
+
+                     var print=shellGlobal.print;
+
+                     var defineClass=shellGlobal.defineClass;
+
+                     var deserialize=shellGlobal.deserialize;
+
+                     var doctest=shellGlobal.doctest;
+
+                     var gc=shellGlobal.gc;
+
+                     var help=shellGlobal.help;
+
+                     var loadClass=shellGlobal.loadClass;
+
+                     var quit=shellGlobal.quit;
+
+                     var readFile=shellGlobal.readFile;
+
+                     var readUrl=shellGlobal.readUrl;
+
+                     var runCommand=shellGlobal.runCommand;
+
+                     var seal=shellGlobal.seal;
+
+                     var serialize=shellGlobal.serialize;
+
+                     var spawn=shellGlobal.spawn;
+
+                     var sync=shellGlobal.sync;
+
+                     var toint32=shellGlobal.toint32;
+
+                     var version=shellGlobal.version;
+
+                     var environment=shellGlobal.environment;
+                     @{text}
+             ]]>
+            </script>
+ 
+
+         </sequential>
+
+     </macrodef>
+  <macrodef name="cdnURLaddHTML">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+        <sequential>
+          <condition property="CDNurlSet">
+            <and>
+              <isset property="cdn.url" />
+            </and>
+          </condition>
+          <if >
+             <equals arg1="${CDNurlSet}" arg2="true" />
+              <then>
+                <rhinoscript>
+                  <!--Wykorzystanie env.js
+                    http://www.envjs.com/
+                   -->
+                  var url = project.getProperty('path.builder')+'/plugins/CDN/lib';
+                   <!--Uwaga setOptimizationLevel(-1) zeby się wgrało env.js-->
+                  Packages.org.mozilla.javascript.Context.getCurrentContext().setOptimizationLevel(-1);
+                  load(url+"/env.js");
+                  load(url+"/jquery.js");
+                  var indexUrl = '@{pTarget}/@{pLang}/'+project.getProperty('main.index');
+                  window.location = indexUrl;
+                  
+                  <!-- TUTAJ WGRYWAMY APP.JS DO OBSLUI EDYCJI INDEXA -->
+                  load(url+"/../app.js")
+                   var w = new java.io.FileWriter(indexUrl);
+                   try
+                   {
+                      w.write(window.document.innerHTML);
+                   }
+                   finally
+                    {
+                      w.close();
+                    }
+                  </rhinoscript>
+                </then>
+            </if>  
+        </sequential>
+    </macrodef>
+  
+  
+  
+
+  <macrodef name="cdnURLaddCSS">
+       <attribute name="pTarget" default="${path.project}/${main.target}"/>
+       <attribute name="pLang"/>
+        <sequential>
+          <condition property="CDNurlSet">
+            <and>
+            <isset property="cdn.url" />
+          </and>
+          </condition>
+        <if >
+           <equals arg1="${CDNurlSet}" arg2="true" />
+          <then>
+            <for param="fileCDN">
+              <fileset dir="@{pTarget}/@{pLang}/${main.css}" >
+                  <include name="**/*.less"/>
+                  <include name="**/*.css"/>
+              </fileset>
+              <sequential>
+                  <replaceregexp 
+                   file="@{fileCDN}" 
+                   match="\.\.\/${main.img}"
+                   replace="${cdn.url}/${main.img}"
+                   flags="gsi" 
+                   byline="true"/>
+              </sequential>
+            </for>             
+          </then>
+        </if>
+          
+        </sequential>
+    </macrodef>
+</project>

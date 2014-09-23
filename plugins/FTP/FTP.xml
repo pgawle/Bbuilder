@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="onServerFTP.ANT">
+	<macrodef name="onServerFTP">
+		<sequential>
+			<echo>Sending file on FTP : ${ftp.server}</echo>
+			<ftp server="${ftp.server}"
+			userid="${ftp.userid}"
+			password="${ftp.password}"
+			depends="yes">
+				<fileset dir="${path.project}/${target.dir}">
+					<include name="**/*.*"/>
+				</fileset>
+			</ftp>
+		</sequential>
+	</macrodef>
+</project>

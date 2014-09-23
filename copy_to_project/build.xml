@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<project name="MyProject">
+  <property file="./private.properties"/>
+	 <property file="./project.properties"/>
+	 <!-- DO NOT PUT IT IN SVN, STORE HERE CREDENTIALS FOR FTP OR SSH -->
+	 <import file="${path.bbuilder}/import.xml"/>
+</project>
