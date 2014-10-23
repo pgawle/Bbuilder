@@ -205,6 +205,63 @@
     <!-- SHORTCUT -->
     <target name="pg" depends="phoneGap"></target>
 
+    <target name="sendCompressedNoLang">
+        <checkProperties />
+        <delete dir="${path.project}/${main.target}"/>
+        <property name="lang" value=""/>
+        <property name="pLang" value="${lang}"/>
+        <echo>LANGUAGE ${pLang}</echo>
+        <createTarget pLang="${pLang}" />
+        <!--<createRedirectIndex pLang="${pLang}"/>-->
+
+        <removeLine name="en-gb.js" pLang="${pLang}"/>
+        <!--<addCssLang pLang="${pLang}" />
+        <addLang pLang="${pLang}"/> -->
+        <removeDebugs pLang="${pLang}"/>
+        <cdnURLaddHTML pLang="${pLang}"/>
+        <cdnURLaddCSS pLang="${pLang}"/>
+        <!--<generateLess pLang="${pLang}"/>
+        <removeLessLink pLang="${pLang}"/> -->
+
+        <concatCSS pLang="${pLang}"/>
+        <RemoveAllLinkTagsWithCSS pLang="${pLang}"/>
+        <addAllCSSTag pLang="${pLang}" beforePath="/"/>
+        <RemoveNotAllCSSFiles pLang="${pLang}"/>
+
+
+        <concatJS pLang="${pLang}"/>
+        <RemoveAllScriptTagsWithSCR pLang="${pLang}"/>
+        <addAllJsScriptTag pLang="${pLang}" beforePath="/"/>
+        <RemoveNotAllJSFiles pLang="${pLang}"/>
+        <!--<includeManifest pLang="${pLang}"/>
+        <createCacheManifest pLang="${pLang}"/>-->
+
+        <!--<minifyHTML pLang="${pLang}"/>-->
+        <addFileAfter pLang="${pLang}"/>
+        <minifyCSS pLang="${pLang}"/>
+        <minifyJS pLang="${pLang}"/>
+
+        <zipTarget />
+
+        <sshToServ />
+        <get src="${release.link}&#38;project=${project.name}${project.version}&#38;file=${releaseFileName}" dest="${main.target}/temp"/>
+
+        <removeTarget />
+
+        <echoDone />
+    </target>
+
+    <!-- SHORTCUT -->
+    <target name="scnl" depends="sendCompressedNoLang"></target>
+
+
+
+
+
+
+
+
+
     <target name="sendCompressed">
             <checkProperties />
             <delete dir="${path.project}/${main.target}"/>

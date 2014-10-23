@@ -11,13 +11,14 @@
 	     <attribute name="pLang"/>
         <sequential>
             <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
-        	<echo >concatenate JS files</echo>
+        	<echo >concatenate JS files ${absolute.path.@{pLang}}/${main.js}</echo>
             <java
              classname="concatJS"
              classpath="${classpath}"
             >
                 <arg value="${absolute.path.@{pLang}}"/>
                 <arg value="${absolute.path.@{pLang}}/${main.index}"/>
+                <arg value="${absolute.path.@{pLang}}/${main.js}"/>
             </java>
         </sequential>
     </macrodef>
@@ -71,6 +72,7 @@
     <macrodef name="addAllJsScriptTag">
       <attribute name="pTarget" default="${path.project}/${main.target}"/>
        <attribute name="pLang"/>
+        <attribute name="beforePath" default="./\"/>
        <sequential>
         <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
         <tstamp>
@@ -79,7 +81,7 @@
             <echo>Add all.js ScriptTag</echo>
 		<replaceregexp file="${absolute.path.@{pLang}}/${main.index}"
                match="&lt;\/html&gt;"
-               replace="&lt;script src=&quot;.\/js\/BIT.all.js?${current.time.js}&quot;&gt;&lt;\/script&gt;&lt;\/html&gt;"
+               replace="&lt;script src=&quot;@{beforePath}${main.js}/BIT.all.js?${current.time.js}&quot;&gt;&lt;\/script&gt;&lt;\/html&gt;"
                byline="true"
 			/> 
 		</sequential>
@@ -93,12 +95,14 @@
         <sequential>
             <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
         	<echo >CONCAT CSS files @{pLang}</echo>
+            <echo >CONCAT CSS files ${absolute.path.@{pLang}}/${main.css}</echo>
             <java
              classname="concatCSS"
              classpath="${classpath}"
             >
                 <arg value="${absolute.path.@{pLang}}"/>
                 <arg value="${absolute.path.@{pLang}}/${main.index}"/>
+                <arg value="${absolute.path.@{pLang}}/${main.css}"/>
             </java>
         </sequential>
     </macrodef>
@@ -124,6 +128,7 @@
      <macrodef name="addAllCSSTag">
        <attribute name="pTarget" default="${path.project}/${main.target}"/>
        <attribute name="pLang" />
+       <attribute name="beforePath" default="./\"/>
        <sequential>
            <property name="absolute.path.@{pLang}" location="@{pTarget}/@{pLang}"/>
             <echo>ADD ALL LINK(CSS) TAG @{pLang}</echo>
@@ -132,7 +137,7 @@
            </tstamp>
 		<replaceregexp file="${absolute.path.@{pLang}}/${main.index}"
                match="&lt;head&gt;"
-               replace="&lt;head&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;css\/all.css?${current.time.js}&quot;&gt;"
+               replace="&lt;head&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;@{beforePath}${main.css}\/all.css?${current.time.js}&quot;&gt;"
                byline="true"
 			/> 
 		</sequential>

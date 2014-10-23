@@ -23,13 +23,14 @@ public class concatCSS {
 			//File f = new File(args[0]);
 			//File jsNew = new File("eee.txt");
 			//minifyFolder(folder);
-			//System.out.println(index);
+			//System.out.println(args[0]);
+			//System.out.println(args[1]);
 			
 			try {
 				Source source=new Source(new URL("file:"+file.getPath()));
 				
 				List sriptList = source.getAllElements(HTMLElementName.LINK);
-				PrintWriter pw = new PrintWriter(new FileOutputStream(args[0]+"/css/all.css"));
+				PrintWriter pw = new PrintWriter(new FileOutputStream(args[2]+"/all.css"));
 				
 								
 				for (int i = 0; i < sriptList.size(); i++) {

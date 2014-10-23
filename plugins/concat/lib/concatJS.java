@@ -32,7 +32,8 @@ public class concatJS {
 				Source source=new Source(new URL("file:"+file.getPath()));
 				
 				List sriptList = source.getAllElements(HTMLElementName.SCRIPT);
-				PrintWriter pw = new PrintWriter(new FileOutputStream(args[0]+"/js/BIT.all.js"));
+
+				PrintWriter pw = new PrintWriter(new FileOutputStream(args[2]+"/BIT.all.js"));
 								
 				for (int i = 0; i < sriptList.size(); i++) {
 					Element element = (Element)sriptList.get(i);
@@ -40,6 +41,7 @@ public class concatJS {
 					if(element.isEmpty()){
 						
 						String[] value = element.getStartTag().getAttributes().get("src").getValue().split("http:");
+
 						net.htmlparser.jericho.Attribute att = element.getStartTag().getAttributes().get("name");
 						
 						String name = "janek";
@@ -48,7 +50,7 @@ public class concatJS {
 								name = att.getValue();
 						}
 
-						
+						//System.out.println(element);
 						//System.out.println(args[0]+"/"+element.getStartTag().getAttributes().get("src").getValue());
 						
 						if(value.length < 2 && !name.equals("keep")){
