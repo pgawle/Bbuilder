@@ -28,9 +28,7 @@ http://ant.apache.org/
 How to install BBuilder for specified project:
 ============================================== 
 
-1. First we have to get it from repository 
-
-Repo address: http://bushidoit.com/svn/buildsystem/devel
+1. First we have to get it from repository. 
 
 2. From copy_to_project folder we copy all files to the project we want to build. It should be placed in the top folder of our project. 
 
